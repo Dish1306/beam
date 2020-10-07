@@ -197,6 +197,7 @@ jobs:
               mkdir -p /github/home/.cache/pip;
               chown -R $(whoami) /github/home/.cache;
               cd sdks/python;
+              yum install -y docker;
               /opt/python/${{ matrix.PYTHON }}/bin/pip install virtualenv;
               /opt/python/${{ matrix.PYTHON }}/bin/python -m virtualenv .venv;
               .venv/bin/pip install -U pip cibuildwheel==1.4.2 cython;
