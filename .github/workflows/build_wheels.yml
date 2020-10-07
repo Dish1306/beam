@@ -200,7 +200,7 @@ jobs:
               /opt/python/${{ matrix.PYTHON }}/bin/python -m virtualenv .venv;
               .venv/bin/pip install -U pip cibuildwheel==1.4.2 cython;
               find / -name "cibuildwheel"
-              cibuildwheel --print-build-identifiers && cibuildwheel --output-dir wheelhouse
+              .venv/bin/cibuildwheel --print-build-identifiers && .venv/bin/cibuildwheel --output-dir wheelhouse
               sha512sum $file > ${file}.sha512
 
   upload_wheels_to_gcs:
