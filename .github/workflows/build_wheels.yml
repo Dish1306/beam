@@ -178,6 +178,31 @@ jobs:
       with:
         name: wheelhouse-${{ matrix.os_python.os }}
         path: apache-beam-source/wheelhouse/
+  
+  manylinux-arm64:
+    name: Build python wheels on ${{ matrix.os_python.os }}
+    needs: build_source
+    runs-on: ubuntu-latest
+    strategy:
+       matrix:
+        os_python: [
+          {"os": "ubuntu-latest", "python": "cp36-* cp37-* cp38-*"},
+        ]
+    steps:
+      - uses: actions/checkout@v2
+      - run: |
+          docker run --rm --privileged hypriot/qemu-register
+      - uses: docker://quay.io/pypa/manylinux2014_aarch64
+        with:
+          args: |
+              bash -c "set -xe;
+              mkdir -p /github/home/.cache/pip;
+              chown -R $(whoami) /github/home/.cache;
+              /opt/python/${{ matrix.os_python.python }}/bin/pip install virtualenv;
+              /opt/python/${{ matrix.os_python.python }}/bin/python -m virtualenv .venv;
+              .venv/bin/pip install -U pip cibuildwheel==1.4.2 cython;
+              cibuildwheel --print-build-identifiers && cibuildwheel --output-dir wheelhouse
+              sha512sum $file > ${file}.sha512
 
   upload_wheels_to_gcs:
     name: Upload wheels to GCS bucket
